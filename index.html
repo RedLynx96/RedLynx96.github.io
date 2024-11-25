@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Adviento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* Cambiado a la imagen local */
+            background: url('images/base.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px #000;
+        }
+        .container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 columnas */
+            gap: 10px;
+            justify-items: center;
+            margin: 0 auto;
+            max-width: 500px; /* Ajusta el ancho máximo */
+            padding: 20px;
+        }
+        .day {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #999;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            background-color: #ccc; /* Gris para días deshabilitados */
+            color: #666;
+            cursor: not-allowed;
+        }
+        .day.today {
+            background-color: #ff6666; /* Rojo para el día actual */
+            border-color: #cc0000;
+            color: #fff;
+            cursor: pointer;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            border-radius: 10px;
+            color: black;
+        }
+        .modal img {
+            max-width: 100%;
+            height: auto;
+        }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9;
+        }
+        .close-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff6666;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        /* Animación de nieve */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            background: white;
+            opacity: 0.8;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall 10s linear infinite;
+        }
+        @keyframes fall {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) translateX(50px);
+                opacity: 0.2;
+            }
+        }
+        .audio-controls {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            z-index: 20;
+        }
+        audio {
+            outline: none;
+        }
+        .control-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .play-button {
+            padding: 15px 30px; /* Increased padding for a bigger button */
+            background-color: #ff0000; /* Changed to red */
+            color: white;
+            border: none;
+            border-radius: 10px; /* Slightly more rounded */
+            cursor: pointer;
+            font-size: 1.2rem; /* Increased font size */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Added shadow for depth */
+            transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+        }
+        .play-button:hover {
+            background-color: #cc0000; /* Darker red on hover */
+            transform: scale(1.05); /* Slightly enlarge on hover */
+        }
+        .volume-slider {
+            width: 150px;
+        }
+        .pause-button {
+            padding: 10px 20px;
+            background-color: #28a745; /* Green color */
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .pause-button:hover {
+            background-color: #1e7e34; /* Darker green on hover */
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1>Calendario de Adviento</h1>
+    
+    <!-- Contenedor para los controles de audio -->
+    <div class="control-container" id="control-container">
+        <!-- Botón para reproducir la música -->
+        <button class="play-button" id="play-button">🎵 Reproducir Música</button>
+    </div>
+    
+    <div class="audio-controls">
+        <audio id="background-music" loop>
+            <source src="https://www.bensound.com/bensound-music/bensound-memories.mp3" type="audio/mpeg">
+            Tu navegador no soporta la reproducción de música.
+        </audio>
+    </div>
+    
+    <div class="container" id="calendar"></div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="modal" id="modal">
+        <h2 id="modal-title"></h2>
+        <p id="modal-message"></p>
+        <img id="modal-image" src="" alt="" style="display: none;">
+        <button class="close-btn" id="close-btn">Cerrar</button>
+    </div>
+
+    <script>
+        // Iniciar la música al hacer clic en el botón y mostrar controles de volumen
+        window.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('background-music');
+            const controlContainer = document.getElementById('control-container');
+            const playButton = document.getElementById('play-button');
+
+            playButton.addEventListener('click', () => {
+                audio.volume = 0.5; // 50% de volumen
+                audio.play().then(() => {
+                    // Reproducción iniciada
+                    // Reemplazar el botón de play con controles de volumen y pausa
+                    controlContainer.innerHTML = `
+                        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+                        <button class="pause-button" id="pause-button">⏸️ Pausar Música</button>
+                    `;
+                    
+                    // Agregar eventos para el slider y el botón de pausa
+                    const volumeSlider = document.getElementById('volume-slider');
+                    const pauseButton = document.getElementById('pause-button');
+
+                    // Control de volumen
+                    volumeSlider.addEventListener('input', (e) => {
+                        audio.volume = e.target.value;
+                    });
+
+                    // Control de pausa/reanudación
+                    pauseButton.addEventListener('click', () => {
+                        if (audio.paused) {
+                            audio.play();
+                            pauseButton.textContent = '⏸️ Pausar Música';
+                        } else {
+                            audio.pause();
+                            pauseButton.textContent = '▶️ Reanudar Música';
+                        }
+                    });
+                }).catch((error) => {
+                    // Manejar el error si el navegador bloquea la reproducción
+                    console.log('Autoplay was prevented:', error);
+                });
+            });
+        });
+
+        // Datos del calendario
+        // Datos personalizados del calendario
+        const days = [
+            {
+                day: 1,
+                question: "¿Cuál es el color de la nieve?",
+                answer: "blanco",
+                message: "¡Correcto! La nieve es blanca.",
+                image: "https://via.placeholder.com/300x200?text=Día+1"
+            },
+            {
+                day: 2,
+                question: "¿Cómo se llama el famoso reno de Santa Claus?",
+                answer: "Rudolph",
+                message: "¡Correcto! El reno se llama Rudolph.",
+                image: "https://via.placeholder.com/300x200?text=Día+2"
+            },
+            {
+                day: 3,
+                question: "¿Qué bebida caliente se consume típicamente en Navidad?",
+                answer: "Chocolate caliente",
+                message: "¡Correcto! El chocolate caliente es popular en Navidad.",
+                image: "https://via.placeholder.com/300x200?text=Día+3"
+            },
+            {
+                day: 4,
+                question: "¿Cuál es el nombre del muñeco de nieve en la canción navideña?",
+                answer: "Frosty",
+                message: "¡Correcto! El muñeco de nieve se llama Frosty.",
+                image: "https://via.placeholder.com/300x200?text=Día+4"
+            },
+            {
+                day: 5,
+                question: "¿Qué planta se utiliza para decorar en Navidad y suele colgarse del techo?",
+                answer: "Muérdago",
+                message: "¡Correcto! El muérdago es una planta común en Navidad.",
+                image: "https://via.placeholder.com/300x200?text=Día+5"
+            },
+            {
+                day: 6,
+                question: "¿En qué país se originó la tradición del árbol de Navidad?",
+                answer: "Alemania",
+                message: "¡Correcto! La tradición del árbol de Navidad se originó en Alemania.",
+                image: "https://via.placeholder.com/300x200?text=Día+6"
+            },
+            {
+                day: 7,
+                question: "¿Cuál es el nombre del famoso ballet de Tchaikovsky asociado con la Navidad?",
+                answer: "El Cascanueces",
+                message: "¡Correcto! El ballet es 'El Cascanueces'.",
+                image: "https://via.placeholder.com/300x200?text=Día+7"
+            },
+            {
+                day: 8,
+                question: "¿Qué dulce tradicional se cuelga en los árboles de Navidad?",
+                answer: "Bolas de Navidad",
+                message: "¡Correcto! Se cuelgan bolas de Navidad.",
+                image: "https://via.placeholder.com/300x200?text=Día+8"
+            },
+            {
+                day: 9,
+                question: "¿Qué símbolo tradicional se coloca en la cima del árbol de Navidad?",
+                answer: "Estrella",
+                message: "¡Correcto! Se coloca una estrella en la cima.",
+                image: "https://via.placeholder.com/300x200?text=Día+9"
+            },
+            {
+                day: 10,
+                question: "¿Cuál es el villancico más popular en muchos países de habla hispana?",
+                answer: "Noche de Paz",
+                message: "¡Correcto! 'Noche de Paz' es muy popular.",
+                image: "https://via.placeholder.com/300x200?text=Día+10"
+            },
+            {
+                day: 11,
+                question: "¿Qué personaje regala juguetes a los niños en Navidad?",
+                answer: "Papá Noel",
+                message: "¡Correcto! Papá Noel regala juguetes.",
+                image: "https://via.placeholder.com/300x200?text=Día+11"
+            },
+            {
+                day: 12,
+                question: "¿Qué planta se utiliza para hacer coronas navideñas?",
+                answer: "Acebo",
+                message: "¡Correcto! Se utiliza el acebo para coronas.",
+                image: "https://via.placeholder.com/300x200?text=Día+12"
+            },
+            {
+                day: 13,
+                question: "¿Cuál es el plato típico que se come en muchos hogares durante la cena de Navidad?",
+                answer: "Pavo",
+                message: "¡Correcto! El pavo es un plato típico.",
+                image: "https://via.placeholder.com/300x200?text=Día+13"
+            },
+            {
+                day: 14,
+                question: "¿Qué figura tradicional viene acompañado de duendes y juguetes en su taller?",
+                answer: "Papá Noel",
+                message: "¡Correcto! Papá Noel tiene duendes y juguetes en su taller.",
+                image: "https://via.placeholder.com/300x200?text=Día+14"
+            },
+            {
+                day: 15,
+                question: "¿Cómo se llama el día después de Navidad?",
+                answer: "Boxing Day",
+                message: "¡Correcto! Se llama Boxing Day.",
+                image: "https://via.placeholder.com/300x200?text=Día+15"
+            },
+            {
+                day: 16,
+                question: "¿Qué bebida espumosa se suele brindar durante las celebraciones navideñas?",
+                answer: "Champán",
+                message: "¡Correcto! Se brinda con champán.",
+                image: "https://via.placeholder.com/300x200?text=Día+16"
+            },
+            {
+                day: 17,
+                question: "¿Cuál es el pastel tradicional que se come en Alemania durante Navidad?",
+                answer: "Stollen",
+                message: "¡Correcto! El pastel se llama Stollen.",
+                image: "https://via.placeholder.com/300x200?text=Día+17"
+            },
+            {
+                day: 18,
+                question: "¿Qué animal suele tirarse al trineo de Papá Noel?",
+                answer: "Renos",
+                message: "¡Correcto! Los renos tiran el trineo.",
+                image: "https://via.placeholder.com/300x200?text=Día+18"
+            },
+            {
+                day: 19,
+                question: "¿Qué país es conocido por la tradición del belén navideño?",
+                answer: "España",
+                message: "¡Correcto! En España es muy conocido.",
+                image: "https://via.placeholder.com/300x200?text=Día+19"
+            },
+            {
+                day: 20,
+                question: "¿Cómo se llama el festival hindú que también se celebra en diciembre?",
+                answer: "Diwali",
+                message: "¡Correcto! El festival se llama Diwali.",
+                image: "https://via.placeholder.com/300x200?text=Día+20"
+            },
+            {
+                day: 21,
+                question: "¿Qué flor roja es símbolo de la Navidad?",
+                answer: "Poinsettia",
+                message: "¡Correcto! La poinsettia es una flor roja de Navidad.",
+                image: "https://via.placeholder.com/300x200?text=Día+21"
+            },
+            {
+                day: 22,
+                question: "¿Qué figura mitológica trae regalos a los niños durante la Navidad en algunas culturas europeas?",
+                answer: "Krampus",
+                message: "¡Correcto! Krampus trae regalos en algunas culturas.",
+                image: "https://via.placeholder.com/300x200?text=Día+22"
+            },
+            {
+                day: 23,
+                question: "¿Qué dulce típico se cuelga y se come en Navidad en muchos países?",
+                answer: "Polvorones",
+                message: "¡Correcto! Los polvorones son dulces típicos.",
+                image: "https://via.placeholder.com/300x200?text=Día+23"
+            },
+            {
+                day: 24,
+                question: "¿Qué celebración marca el final del Adviento en la noche del 24 de diciembre?",
+                answer: "Nochebuena",
+                message: "¡Correcto! La noche del 24 es Nochebuena.",
+                image: "https://via.placeholder.com/300x200?text=Día+24"
+            },
+            {
+                day: 25,
+                question: "¿Cuál es el verdadero significado de la Navidad?",
+                answer: "amor",
+                message: "¡Correcto! La Navidad es una época de amor.",
+                image: "https://via.placeholder.com/300x200?text=Día+25"
+            },
+            {
+                day: 26,
+                question: "¿Qué día se celebra el Boxing Day en muchos países de la Commonwealth?",
+                answer: "26 de diciembre",
+                message: "¡Correcto! El Boxing Day se celebra el 26 de diciembre.",
+                image: "https://via.placeholder.com/300x200?text=Día+26"
+            },
+            {
+                day: 27,
+                question: "¿Cuál es el día que sigue al Boxing Day?",
+                answer: "27 de diciembre",
+                message: "¡Correcto! El día siguiente es el 27 de diciembre.",
+                image: "https://via.placeholder.com/300x200?text=Día+27"
+            },
+            {
+                day: 28,
+                question: "¿Qué celebración religiosa se conmemora el 28 de diciembre en México?",
+                answer: "Día de los Santos Inocentes",
+                message: "¡Correcto! Se celebra el Día de los Santos Inocentes.",
+                image: "https://via.placeholder.com/300x200?text=Día+28"
+            },
+            {
+                day: 29,
+                question: "¿Cómo se llama el día de San Esteban, celebrado el 26 de diciembre?",
+                answer: "Día de San Esteban",
+                message: "¡Correcto! Se llama Día de San Esteban.",
+                image: "https://via.placeholder.com/300x200?text=Día+29"
+            },
+            {
+                day: 30,
+                question: "¿Qué festividad se celebra el 31 de diciembre?",
+                answer: "Año Nuevo",
+                message: "¡Correcto! Se celebra el Año Nuevo.",
+                image: "https://via.placeholder.com/300x200?text=Día+30"
+            },
+            {
+                day: 31,
+                question: "¿Cuál es el momento justo para brindar por el Año Nuevo?",
+                answer: "Medianoche",
+                message: "¡Correcto! Se brinda a medianoche.",
+                image: "https://via.placeholder.com/300x200?text=Día+31"
+            }
+        ];
+
+
+        // Obtener fecha actual
+        const today = new Date();
+        const currentDay = today.getDate();
+
+        // Crear los días del calendario
+        const calendar = document.getElementById("calendar");
+
+        days.forEach(dayInfo => {
+            const dayElement = document.createElement("div");
+            dayElement.className = "day";
+            dayElement.textContent = dayInfo.day;
+
+            // Configurar el día actual
+            if (dayInfo.day === currentDay) {
+                dayElement.classList.add("today");
+                dayElement.addEventListener("click", () => openQuestion(dayInfo));
+            }
+
+            calendar.appendChild(dayElement);
+        });
+
+        // Abrir modal con la pregunta
+        const modal = document.getElementById("modal");
+        const overlay = document.getElementById("overlay");
+        const modalTitle = document.getElementById("modal-title");
+        const modalMessage = document.getElementById("modal-message");
+        const modalImage = document.getElementById("modal-image");
+        const closeModal = document.getElementById("close-btn");
+
+        function openQuestion(dayInfo) {
+            const userAnswer = prompt(dayInfo.question);
+            if (userAnswer && userAnswer.toLowerCase() === dayInfo.answer.toLowerCase()) {
+                modalTitle.textContent = `Día ${dayInfo.day}`;
+                modalMessage.textContent = dayInfo.message;
+                if (dayInfo.image) {
+                    modalImage.src = dayInfo.image;
+                    modalImage.style.display = "block";
+                } else {
+                    modalImage.style.display = "none";
+                }
+                modal.style.display = "block";
+                overlay.style.display = "block";
+            } else {
+                alert("Respuesta incorrecta. Inténtalo de nuevo.");
+            }
+        }
+
+        // Cerrar modal
+        closeModal.addEventListener("click", () => {
+            modal.style.display = "none";
+            overlay.style.display = "none";
+        });
+
+        overlay.addEventListener("click", () => {
+            modal.style.display = "none";
+            overlay.style.display = "none";
+        });
+
+        // Añadir copos de nieve al azar
+        function createSnowflakes() {
+            const snowflake = document.createElement("div");
+            snowflake.className = "snowflake";
+            snowflake.style.left = Math.random() * window.innerWidth + "px";
+            snowflake.style.animationDuration = 5 + Math.random() * 5 + "s"; // Duración aleatoria
+            snowflake.style.opacity = Math.random();
+            document.body.appendChild(snowflake);
+
+            // Eliminar copos al finalizar animación
+            snowflake.addEventListener("animationend", () => {
+                snowflake.remove();
+            });
+        }
+
+        setInterval(createSnowflakes, 200); // Crear copos cada 200ms
+    </script>
+</body>
+</html>
