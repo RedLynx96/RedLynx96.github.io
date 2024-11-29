@@ -9,27 +9,29 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            /* Cambiado a la imagen local */
             background: url('images/base.jpg') no-repeat center center fixed;
             background-size: cover;
             color: white;
             overflow: hidden;
         }
+
         h1 {
             text-align: center;
             margin-top: 20px;
             font-size: 2.5rem;
             text-shadow: 2px 2px 4px #000;
         }
+
         .container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* 5 columnas */
+            grid-template-columns: repeat(5, 1fr);
             gap: 10px;
-            justify-items: center;
+            justify-content: center;
             margin: 0 auto;
-            max-width: 300px; /* Ajusta el ancho máximo */
+            max-width: 300px;
             padding: 5px;
         }
+
         .day {
             width: 60px;
             height: 60px;
@@ -40,16 +42,32 @@
             font-size: 20px;
             font-weight: bold;
             border-radius: 10px;
-            background-color: #ccc; /* Gris para días deshabilitados */
+            background-color: #ccc;
             color: #666;
+            text-align: center;
+        }
+
+        .day.unlocked {
+            background-color: #6ad16d;
+            color: white;
+            border-color: #388e3c;
+            cursor: pointer;
+        }
+
+        .day.locked {
+            background-color: #ccc;
+            color: #666;
+            border-color: #999;
             cursor: not-allowed;
         }
+
         .day.today {
-            background-color: #ff6666; /* Rojo para el día actual */
+            background-color: #ff6666;
             border-color: #cc0000;
             color: #fff;
             cursor: pointer;
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -63,10 +81,12 @@
             border-radius: 10px;
             color: black;
         }
+
         .modal img {
             max-width: 100%;
             height: auto;
         }
+
         .overlay {
             display: none;
             position: fixed;
@@ -77,6 +97,7 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 9;
         }
+
         .close-btn {
             margin-top: 20px;
             padding: 10px 20px;
@@ -86,7 +107,8 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        /* Animación de nieve */
+
+        /* Snowflake Animation */
         .snowflake {
             position: fixed;
             top: -10px;
@@ -98,6 +120,7 @@
             pointer-events: none;
             animation: fall 10s linear infinite;
         }
+
         @keyframes fall {
             0% {
                 transform: translateY(0) translateX(0);
@@ -108,45 +131,17 @@
                 opacity: 0.2;
             }
         }
+
         .audio-controls {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            z-index: 20;
-        }
-        audio {
-            outline: none;
-        }
-        .control-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 20;
+            margin: 20px auto 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 10px;
         }
+
         .play-button {
-            padding: 15px 30px; /* Increased padding for a bigger button */
-            background-color: #ff0000; /* Changed to red */
-            color: white;
-            border: none;
-            border-radius: 10px; /* Slightly more rounded */
-            cursor: pointer;
-            font-size: 1.2rem; /* Increased font size */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Added shadow for depth */
-            transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
-        }
-        .play-button:hover {
-            background-color: #cc0000; /* Darker red on hover */
-            transform: scale(1.05); /* Slightly enlarge on hover */
-        }
-        .volume-slider {
-            width: 150px;
-        }
-        .pause-button {
             padding: 10px 20px;
-            background-color: #28a745; /* Green color */
+            background-color: #ff0000;
             color: white;
             border: none;
             border-radius: 10px;
@@ -155,29 +150,29 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             transition: background-color 0.3s, transform 0.2s;
         }
-        .pause-button:hover {
-            background-color: #1e7e34; /* Darker green on hover */
+
+        .play-button:hover {
+            background-color: #cc0000;
             transform: scale(1.05);
         }
+
+        .volume-slider {
+            margin-top: 10px;
+            width: 200px;
+            display: none;
+        }
+
     </style>
 </head>
 <body>
     <h1>Calendario de Adviento</h1>
-    
-    <!-- Contenedor para los controles de audio -->
-    <div class="control-container" id="control-container">
-        <!-- Botón para reproducir la música -->
-        <button class="play-button" id="play-button">🎵 Reproducir Música</button>
-    </div>
-    
-    <div class="audio-controls">
-        <audio id="background-music" loop>
-            <source src="https://www.bensound.com/bensound-music/bensound-memories.mp3" type="audio/mpeg">
-            Tu navegador no soporta la reproducción de música.
-        </audio>
-    </div>
-    
+
     <div class="container" id="calendar"></div>
+
+    <div class="audio-controls" id="audio-controls">
+        <button class="play-button" id="play-button">🎵 Reproducir Música</button>
+        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
+    </div>
 
     <div class="overlay" id="overlay"></div>
     <div class="modal" id="modal">
@@ -188,51 +183,7 @@
     </div>
 
     <script>
-        // Iniciar la música al hacer clic en el botón y mostrar controles de volumen
-        window.addEventListener('DOMContentLoaded', () => {
-            const audio = document.getElementById('background-music');
-            const controlContainer = document.getElementById('control-container');
-            const playButton = document.getElementById('play-button');
-
-            playButton.addEventListener('click', () => {
-                audio.volume = 0.5; // 50% de volumen
-                audio.play().then(() => {
-                    // Reproducción iniciada
-                    // Reemplazar el botón de play con controles de volumen y pausa
-                    controlContainer.innerHTML = `
-                        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
-                        <button class="pause-button" id="pause-button">⏸️ Pausar Música</button>
-                    `;
-                    
-                    // Agregar eventos para el slider y el botón de pausa
-                    const volumeSlider = document.getElementById('volume-slider');
-                    const pauseButton = document.getElementById('pause-button');
-
-                    // Control de volumen
-                    volumeSlider.addEventListener('input', (e) => {
-                        audio.volume = e.target.value;
-                    });
-
-                    // Control de pausa/reanudación
-                    pauseButton.addEventListener('click', () => {
-                        if (audio.paused) {
-                            audio.play();
-                            pauseButton.textContent = '⏸️ Pausar Música';
-                        } else {
-                            audio.pause();
-                            pauseButton.textContent = '▶️ Reanudar Música';
-                        }
-                    });
-                }).catch((error) => {
-                    // Manejar el error si el navegador bloquea la reproducción
-                    console.log('Autoplay was prevented:', error);
-                });
-            });
-        });
-
-        // Datos del calendario
-        // Datos personalizados del calendario
-        const days = [
+                const days = [
             {
                 day: 1,
                 question: "¿Cuál es el color de la nieve?",
@@ -452,12 +403,8 @@
             }
         ];
 
-
-        // Obtener fecha actual
         const today = new Date();
         const currentDay = today.getDate();
-
-        // Crear los días del calendario
         const calendar = document.getElementById("calendar");
 
         days.forEach(dayInfo => {
@@ -465,16 +412,19 @@
             dayElement.className = "day";
             dayElement.textContent = dayInfo.day;
 
-            // Configurar el día actual
-            if (dayInfo.day === currentDay) {
+            if (dayInfo.day < currentDay) {
+                dayElement.classList.add("unlocked");
+                dayElement.addEventListener("click", () => openModal(dayInfo));
+            } else if (dayInfo.day === currentDay) {
                 dayElement.classList.add("today");
-                dayElement.addEventListener("click", () => openQuestion(dayInfo));
+                dayElement.addEventListener("click", () => openModal(dayInfo));
+            } else {
+                dayElement.classList.add("locked");
             }
 
             calendar.appendChild(dayElement);
         });
 
-        // Abrir modal con la pregunta
         const modal = document.getElementById("modal");
         const overlay = document.getElementById("overlay");
         const modalTitle = document.getElementById("modal-title");
@@ -482,7 +432,7 @@
         const modalImage = document.getElementById("modal-image");
         const closeModal = document.getElementById("close-btn");
 
-        function openQuestion(dayInfo) {
+        function openModal(dayInfo) {
             const userAnswer = prompt(dayInfo.question);
             if (userAnswer && userAnswer.toLowerCase() === dayInfo.answer.toLowerCase()) {
                 modalTitle.textContent = `Día ${dayInfo.day}`;
@@ -500,7 +450,6 @@
             }
         }
 
-        // Cerrar modal
         closeModal.addEventListener("click", () => {
             modal.style.display = "none";
             overlay.style.display = "none";
@@ -511,22 +460,42 @@
             overlay.style.display = "none";
         });
 
-        // Añadir copos de nieve al azar
+        // Snowflake Animation
         function createSnowflakes() {
             const snowflake = document.createElement("div");
             snowflake.className = "snowflake";
             snowflake.style.left = Math.random() * window.innerWidth + "px";
-            snowflake.style.animationDuration = 5 + Math.random() * 5 + "s"; // Duración aleatoria
+            snowflake.style.animationDuration = 5 + Math.random() * 5 + "s";
             snowflake.style.opacity = Math.random();
             document.body.appendChild(snowflake);
 
-            // Eliminar copos al finalizar animación
             snowflake.addEventListener("animationend", () => {
                 snowflake.remove();
             });
         }
 
-        setInterval(createSnowflakes, 200); // Crear copos cada 200ms
+        // Audio Logic
+        const audio = new Audio('https://www.bensound.com/bensound-music/bensound-memories.mp3');
+        const playButton = document.getElementById('play-button');
+        const volumeSlider = document.getElementById('volume-slider');
+
+        playButton.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.volume = 0.5; // Set initial volume
+                audio.play();
+                playButton.textContent = '⏸️ Pausar Música'; // Update button text
+                volumeSlider.style.display = 'block'; // Show slider
+            } else {
+                audio.pause();
+                playButton.textContent = '🎵 Reproducir Música'; // Update button text
+                volumeSlider.style.display = 'none'; // Hide slider
+            }
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            audio.volume = e.target.value;
+        });
+        setInterval(createSnowflakes, 200);
     </script>
 </body>
 </html>
