@@ -24,7 +24,7 @@
 
         .container {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 10px;
             justify-content: center;
             margin: 0 auto;
@@ -38,33 +38,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 2px solid #999;
-            font-size: 20px;
-            font-weight: bold;
             border-radius: 10px;
             background-color: #ccc;
-            color: #666;
             text-align: center;
         }
 
         .day.unlocked {
-            background-color: #6ad16d;
-            color: white;
-            border-color: #388e3c;
+            border: 5px solid #6ad16d; /* Verde para días pasados */
             cursor: pointer;
         }
 
         .day.locked {
-            background-color: #ccc;
-            color: #666;
-            border-color: #999;
+            border: 5px solid #999; /* Gris para días futuros */
             cursor: not-allowed;
+            filter: grayscale(100%);
         }
 
         .day.today {
-            background-color: #ff6666;
-            border-color: #cc0000;
-            color: #fff;
+            border: 5px solid #ff6666; /* Rojo para el día actual */
             cursor: pointer;
         }
 
@@ -352,55 +343,6 @@
                 message: "¡Correcto! La noche del 24 es Nochebuena.",
                 image: "https://via.placeholder.com/300x200?text=Día+24"
             },
-            {
-                day: 25,
-                question: "¿Cuál es el verdadero significado de la Navidad?",
-                answer: "amor",
-                message: "¡Correcto! La Navidad es una época de amor.",
-                image: "https://via.placeholder.com/300x200?text=Día+25"
-            },
-            {
-                day: 26,
-                question: "¿Qué día se celebra el Boxing Day en muchos países de la Commonwealth?",
-                answer: "26 de diciembre",
-                message: "¡Correcto! El Boxing Day se celebra el 26 de diciembre.",
-                image: "https://via.placeholder.com/300x200?text=Día+26"
-            },
-            {
-                day: 27,
-                question: "¿Cuál es el día que sigue al Boxing Day?",
-                answer: "27 de diciembre",
-                message: "¡Correcto! El día siguiente es el 27 de diciembre.",
-                image: "https://via.placeholder.com/300x200?text=Día+27"
-            },
-            {
-                day: 28,
-                question: "¿Qué celebración religiosa se conmemora el 28 de diciembre en México?",
-                answer: "Día de los Santos Inocentes",
-                message: "¡Correcto! Se celebra el Día de los Santos Inocentes.",
-                image: "https://via.placeholder.com/300x200?text=Día+28"
-            },
-            {
-                day: 29,
-                question: "¿Cómo se llama el día de San Esteban, celebrado el 26 de diciembre?",
-                answer: "Día de San Esteban",
-                message: "¡Correcto! Se llama Día de San Esteban.",
-                image: "https://via.placeholder.com/300x200?text=Día+29"
-            },
-            {
-                day: 30,
-                question: "¿Qué festividad se celebra el 31 de diciembre?",
-                answer: "Año Nuevo",
-                message: "¡Correcto! Se celebra el Año Nuevo.",
-                image: "https://via.placeholder.com/300x200?text=Día+30"
-            },
-            {
-                day: 31,
-                question: "¿Cuál es el momento justo para brindar por el Año Nuevo?",
-                answer: "Medianoche",
-                message: "¡Correcto! Se brinda a medianoche.",
-                image: "https://via.placeholder.com/300x200?text=Día+31"
-            }
         ];
 
         const today = new Date();
@@ -410,8 +352,20 @@
         days.forEach(dayInfo => {
             const dayElement = document.createElement("div");
             dayElement.className = "day";
-            dayElement.textContent = dayInfo.day;
 
+            const img = document.createElement("img");
+
+            // Set the image source
+            if (dayInfo.day <= 24) {
+                img.src = `images/numbers/${dayInfo.day}.png`;
+            } else {
+                img.src = "images/numbers/24.png"; // Default image for locked days
+            }
+
+            img.alt = `Día ${dayInfo.day}`;
+            img.style.width = "100%";
+            img.style.height = "auto";
+            
             if (dayInfo.day < currentDay) {
                 dayElement.classList.add("unlocked");
                 dayElement.addEventListener("click", () => openModal(dayInfo));
@@ -422,6 +376,7 @@
                 dayElement.classList.add("locked");
             }
 
+            dayElement.appendChild(img);
             calendar.appendChild(dayElement);
         });
 
