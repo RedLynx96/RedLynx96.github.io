@@ -60,7 +60,10 @@
         }
 
         .modal {
-            display: none;
+            display: none; /* Usamos flexbox */
+            flex-direction: column; /* Alineamos el contenido en columna */
+            justify-content: center; /* Centra verticalmente */
+            align-items: center; /* Centra horizontalmente */
             position: fixed;
             top: 50%;
             left: 50%;
@@ -71,11 +74,9 @@
             z-index: 10;
             border-radius: 10px;
             color: black;
-        }
-
-        .modal img {
-            max-width: 100%;
-            height: auto;
+            max-width: 90%; /* Evita que el modal sea más grande que la ventana */
+            max-height: 90%; /* Limita la altura máxima */
+            overflow: auto; /* Habilita scroll si el contenido es más grande */
         }
 
         .overlay {
@@ -153,6 +154,37 @@
             display: none;
         }
 
+        #modal-video {
+            display: none; /* Ocultarlo por defecto */
+            max-width: 100%; /* Limitar el ancho al tamaño del modal */
+            max-height: 200px; /* Limitar la altura máxima */
+            border-radius: 8px; /* Bordes redondeados */
+            margin: 10px auto; /* Centrarse dentro del modal */
+        }
+
+        #modal-content {
+            text-align: center;
+            margin: 10px auto;
+        }
+
+        #modal-video {
+            max-width: 100%;
+            max-height: 200px; /* Limita la altura del contenido */
+            margin-top: 10px;
+            border-radius: 8px;
+            object-fit: contain; /* Asegura que la imagen se ajuste dentro del modal */
+            text-align: center;
+            display: block;
+        }
+
+        #modal-image {
+            display: block; /* Asegura que sea un elemento de bloque */
+            margin: 0 auto; /* Centra horizontalmente */
+            max-width: 100%; /* Ajusta el ancho al tamaño del modal */
+            max-height: 80vh; /* Limita la altura para evitar desbordamiento */
+            object-fit: contain; /* Asegura que la imagen no se deforme */
+        }
+
     </style>
 </head>
 <body>
@@ -166,21 +198,36 @@
     </div>
 
     <div class="overlay" id="overlay"></div>
+
     <div class="modal" id="modal">
         <h2 id="modal-title"></h2>
         <p id="modal-message"></p>
-        <img id="modal-image" src="" alt="" style="display: none;">
+        <div id="modal-content">
+            <img id="modal-image" src="" alt="Imagen del día" style="display: none;">
+            <video id="modal-video" controls style="display: none;">
+                <source src="" type="video/mp4">
+                Tu navegador no soporta la reproducción de videos.
+            </video>
+        </div>
         <button class="close-btn" id="close-btn">Cerrar</button>
     </div>
+
+    <video id="modal-video" controls style="display: none; width: 100%; height: auto;">
+        <source src="" type="video/mp4">
+        Tu navegador no soporta la reproducción de videos.
+    </video>
 
     <script>
                 const days = [
             {
                 day: 1,
-                question: "¿Cuál es el color de la nieve?",
-                answer: "blanco",
-                message: "¡Correcto! La nieve es blanca.",
-                image: "https://via.placeholder.com/300x200?text=Día+1"
+                question: "¿Cuantas navidades hemos pasado juncos?",
+                answer: "4",
+                message: "Correcto! 4 navidades de las 76 que nos quedan juncos!",
+                //image: "https://via.placeholder.com/300x200?text=Día+1"
+                image: "images/nosocos/1.png",
+                width: "250px", // Ancho de la imagen
+                height: "400px",  // Altura, ajustada automáticamente
             },
             {
                 day: 2,
@@ -198,10 +245,12 @@
             },
             {
                 day: 4,
-                question: "¿Cuál es el nombre del muñeco de nieve en la canción navideña?",
-                answer: "Frosty",
-                message: "¡Correcto! El muñeco de nieve se llama Frosty.",
-                image: "https://via.placeholder.com/300x200?text=Día+4"
+                question: "¿Que dia es hoy?",
+                answer: "Aniversario",
+                message: "Felices 3 años, y 2 meses mi juncacea! Te ambo muxo!",
+                video: "images/nosocos/4.mp4",
+                width: "350px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamente
             },
             {
                 day: 5,
@@ -343,6 +392,55 @@
                 message: "¡Correcto! La noche del 24 es Nochebuena.",
                 image: "https://via.placeholder.com/300x200?text=Día+24"
             },
+            {
+                day: 25,
+                question: "¿Cuál es el verdadero significado de la Navidad?",
+                answer: "amor",
+                message: "¡Correcto! La Navidad es una época de amor.",
+                image: "https://via.placeholder.com/300x200?text=Día+25"
+            },
+            {
+                day: 26,
+                question: "¿Qué día se celebra el Boxing Day en muchos países de la Commonwealth?",
+                answer: "26 de diciembre",
+                message: "¡Correcto! El Boxing Day se celebra el 26 de diciembre.",
+                image: "https://via.placeholder.com/300x200?text=Día+26"
+            },
+            {
+                day: 27,
+                question: "¿Cuál es el día que sigue al Boxing Day?",
+                answer: "27 de diciembre",
+                message: "¡Correcto! El día siguiente es el 27 de diciembre.",
+                image: "https://via.placeholder.com/300x200?text=Día+27"
+            },
+            {
+                day: 28,
+                question: "¿Qué celebración religiosa se conmemora el 28 de diciembre en México?",
+                answer: "Día de los Santos Inocentes",
+                message: "¡Correcto! Se celebra el Día de los Santos Inocentes.",
+                image: "https://via.placeholder.com/300x200?text=Día+28"
+            },
+            {
+                day: 29,
+                question: "¿Cómo se llama el día de San Esteban, celebrado el 26 de diciembre?",
+                answer: "Día de San Esteban",
+                message: "¡Correcto! Se llama Día de San Esteban.",
+                image: "https://via.placeholder.com/300x200?text=Día+29"
+            },
+            {
+                day: 30,
+                question: "¿Qué festividad se celebra el 31 de diciembre?",
+                answer: "Año Nuevo",
+                message: "¡Correcto! Se celebra el Año Nuevo.",
+                image: "https://via.placeholder.com/300x200?text=Día+30"
+            },
+            {
+                day: 31,
+                question: "¿Cuál es el momento justo para brindar por el Año Nuevo?",
+                answer: "Medianoche",
+                message: "¡Correcto! Se brinda a medianoche.",
+                image: "https://via.placeholder.com/300x200?text=Día+31"
+            }
         ];
 
         const today = new Date();
@@ -389,15 +487,45 @@
 
         function openModal(dayInfo) {
             const userAnswer = prompt(dayInfo.question);
+
             if (userAnswer && userAnswer.toLowerCase() === dayInfo.answer.toLowerCase()) {
                 modalTitle.textContent = `Día ${dayInfo.day}`;
                 modalMessage.textContent = dayInfo.message;
+
+                // Selección de elementos de imagen y video
+                const modalVideo = document.getElementById("modal-video");
+                const videoSource = modalVideo.querySelector("source");
+
+                // Lógica para mostrar imagen o video
                 if (dayInfo.image) {
-                    modalImage.src = dayInfo.image;
-                    modalImage.style.display = "block";
+                    modalImage.src = dayInfo.image; // Asigna la fuente de la imagen
+                    modalImage.style.display = "block"; // Muestra la imagen
+
+                    // Configuración para centrar y ajustar tamaño
+                    modalImage.style.maxWidth = dayInfo.width || "100%"; // Si está definido, usa `width`
+                    modalImage.style.maxHeight = dayInfo.height || "80vh"; // Si está definido, usa `height`
+
+                    // Asegúrate de que el video esté oculto
+                    modalVideo.style.display = "none";
+                    videoSource.src = "";
+                } else if (dayInfo.video) {
+                    console.log("Mostrando video:", dayInfo.video); // Debugging
+                    videoSource.src = dayInfo.video; // Establecer la fuente del video
+
+                    modalVideo.style.display = "block"; // Mostrar el video
+                    modalVideo.style.width = dayInfo.width || "300px"; // Usar el ancho definido o predeterminado
+                    modalVideo.style.height = dayInfo.height || "auto"; // Usar la altura definida o auto por defecto
+                    modalVideo.style.margin = "0 auto"; // Centrar el video dentro del modal
+
+                    modalVideo.load(); // Recargar el video para asegurar la reproducción
+                    modalImage.style.display = "none"; // Ocultar la imagen
                 } else {
+                    // Si no hay imagen ni video, ocultar ambos
                     modalImage.style.display = "none";
+                    modalVideo.style.display = "none";
                 }
+
+                // Mostrar el modal
                 modal.style.display = "block";
                 overlay.style.display = "block";
             } else {
