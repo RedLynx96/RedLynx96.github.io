@@ -270,7 +270,7 @@
                 day: 6,
                 question: "Por españa, las mujeres, y el vino...",
                 answer: "a tomar por culo el chino",
-                message: "Vaya cuenco eres chio!, coge una chocolatina mi ambo ❤️",
+                message: "Vaya cuenco eres chio!, coge un chocolate mi ambo ❤️",
                 //image: "https://via.placeholder.com/300x200?text=Día+3"
                 image: "images/nosocos/5.png",
                 width: "300px", // Ancho de la imagen
@@ -278,38 +278,48 @@
             },
             {
                 day: 7,
-                question: "¿Cuál es el nombre del famoso ballet de Tchaikovsky asociado con la Navidad?",
-                answer: "El Cascanueces",
-                message: "¡Correcto! El ballet es 'El Cascanueces'.",
-                image: "https://via.placeholder.com/300x200?text=Día+7"
+                question: "Como se llamaba el mayordomo y asistente de L en death note?",
+                answer: "Watari",
+                message: "\"Las campanas, Light, las escuchas?\" -L",
+                image: "images/nosocos/watari.jpg",
+                width: "300px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamente
             },
             {
                 day: 8,
-                question: "¿Qué dulce tradicional se cuelga en los árboles de Navidad?",
-                answer: "Bolas de Navidad",
-                message: "¡Correcto! Se cuelgan bolas de Navidad.",
-                image: "https://via.placeholder.com/300x200?text=Día+8"
+                question: "De que color hay que llevar la ropa interior en nochevieja?",
+                answer: "Rojo",
+                message: "Mi chica siempre cumple, nga! 🤭",
+                image: "images/nosocos/8.png",
+                width: "300px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 9,
-                question: "¿Qué símbolo tradicional se coloca en la cima del árbol de Navidad?",
-                answer: "Estrella",
-                message: "¡Correcto! Se coloca una estrella en la cima.",
-                image: "https://via.placeholder.com/300x200?text=Día+9"
+                question: "Cuantos años cumplio el juncaceo cuando se casaron Bobe y Rocio",
+                answer: "26",
+                message: "\"Cumples años el dia de nuestra boda?? 🤔 Inconsentible!\"-Bobe y Rocio",
+                image: "images/nosocos/9.png",
+                width: "400px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 10,
-                question: "¿Cuál es el villancico más popular en muchos países de habla hispana?",
-                answer: "Noche de Paz",
-                message: "¡Correcto! 'Noche de Paz' es muy popular.",
-                image: "https://via.placeholder.com/300x200?text=Día+10"
+                question: "Del 1 al 10, que puntuacion le da novio a novia?",
+                answer: "11",
+                message: "Nga!!, es que te amo mucho mi juncacea! ❤️",
+                image: "images/nosocos/10.jpeg",
+                width: "300px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 11,
-                question: "¿Qué personaje regala juguetes a los niños en Navidad?",
-                answer: "Papá Noel",
-                message: "¡Correcto! Papá Noel regala juguetes.",
-                image: "https://via.placeholder.com/300x200?text=Día+11"
+                question: "En que centro comercial fue nuestra primera cita?",
+                answer: "Sambil",
+                message: "Y no hemos vuelto! jajant!",
+                image: "images/nosocos/11.jpeg",
+                width: "300px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 12,
@@ -425,7 +435,7 @@
             img.style.width = "100%";
             img.style.height = "auto";
             
-            if (dayInfo.day < currentDay) {
+            if (dayInfo.day > currentDay) {
                 dayElement.classList.add("unlocked");
                 dayElement.addEventListener("click", () => openModal(dayInfo));
             } else if (dayInfo.day === currentDay) {
