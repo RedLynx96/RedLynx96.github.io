@@ -435,7 +435,7 @@
             img.style.width = "100%";
             img.style.height = "auto";
             
-            if (dayInfo.day > currentDay) {
+            if (dayInfo.day < currentDay) {
                 dayElement.classList.add("unlocked");
                 dayElement.addEventListener("click", () => openModal(dayInfo));
             } else if (dayInfo.day === currentDay) {
