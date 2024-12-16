@@ -219,14 +219,24 @@
 
     <script>
                 const days = [
+            //{
+            //    day: 1,
+            //    question: "¿Cuantas navidades hemos pasado juncos?",
+            //    answer: "4",
+            //    message: "Correcto! y ya veras las que quedan por venir!",
+            //    //image: "https://via.placeholder.com/300x200?text=Día+1"
+            //    image: "images/nosocos/1.png",
+            //    width: "250px", // Ancho de la imagen
+            //    height: "400px",  // Altura, ajustada automáticamente
+            //},
             {
                 day: 1,
-                question: "¿Cuantas navidades hemos pasado juncos?",
-                answer: "4",
-                message: "Correcto! y ya veras las que quedan por venir!",
+                question: "Quien esta mas enamorado de los 2? (Nombre)",
+                answer: "David",
+                message: "Veo que por fin has aprendido a responder bien! 🤭 <br><br>Ahora mira la foco!",
                 //image: "https://via.placeholder.com/300x200?text=Día+1"
-                image: "images/nosocos/1.png",
-                width: "250px", // Ancho de la imagen
+                image: "images/nosocos/1b.jpeg",
+                width: "350px", // Ancho de la imagen
                 height: "400px",  // Altura, ajustada automáticamente
             },
             {
@@ -368,31 +378,39 @@
             },
             {
                 day: 17,
-                question: "¿Cuál es el pastel tradicional que se come en Alemania durante Navidad?",
-                answer: "Stollen",
-                message: "¡Correcto! El pastel se llama Stollen.",
-                image: "https://via.placeholder.com/300x200?text=Día+17"
+                question: "En que municipio estaba el primer spa al que fuimos?",
+                answer: "segovia",
+                message: "Correcto!, en el hotel La Casa Mudéjar!",
+                image: "images/nosocos/17.jpeg",
+                width: "300px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 18,
-                question: "¿Qué animal suele tirarse al trineo de Papá Noel?",
-                answer: "Renos",
-                message: "¡Correcto! Los renos tiran el trineo.",
-                image: "https://via.placeholder.com/300x200?text=Día+18"
+                question: "¿Qué animal (peluche) suele dejar novio del reves en tu cama?",
+                answer: "Pulpo",
+                message: "Mi novia siempre se da cuenta cuando ya me he ido jeje 🐙",
+                image: "images/nosocos/18.jpeg",
+                width: "300px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 19,
-                question: "¿Qué país es conocido por la tradición del belén navideño?",
-                answer: "España",
-                message: "¡Correcto! En España es muy conocido.",
-                image: "https://via.placeholder.com/300x200?text=Día+19"
+                question: "Vuelve a la pregunta del dia 1. \n" + "En la foto de ese dia, a donde ibamos?",
+                answer: "Torrox",
+                message: "El unico viaje en bus que hemos hecho juntos! 🚌",
+                image: "images/nosocos/19b.jpg",
+                width: "400px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 20,
-                question: "¿Cómo se llama el festival hindú que también se celebra en diciembre?",
-                answer: "Diwali",
-                message: "¡Correcto! El festival se llama Diwali.",
-                image: "https://via.placeholder.com/300x200?text=Día+20"
+                question: "Que suele hacer novio cuando hacemos videollamada? \n" + "C _ _ T _ _ _ S D _ P _ _ T _ L _",
+                answer: "Capturas de Pantalla",
+                message: "Tu novio el menos cuenco! 🤭",
+                image: "images/nosocos/20.jpeg",
+                width: "400px", // Ancho de la imagen
+                height: "auto",  // Altura, ajustada automáticamentes
             },
             {
                 day: 21,
@@ -472,7 +490,7 @@
 
             if (userAnswer && userAnswer.toLowerCase() === dayInfo.answer.toLowerCase()) {
                 modalTitle.textContent = `Día ${dayInfo.day}`;
-                modalMessage.textContent = dayInfo.message;
+                modalMessage.innerHTML = dayInfo.message;
 
                 // Selección de elementos de imagen y video
                 const modalVideo = document.getElementById("modal-video");
